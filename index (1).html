@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contribuições — Passeio Escolar | Externato Luz do Dia</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  :root{
+    --bg:#F7FAF9;
+    --surface:#FFFFFF;
+    --primary:#146C6B;
+    --primary-light:#1E9C90;
+    --primary-dark:#0D4B4A;
+    --accent:#F2A65A;
+    --text:#1F2A2E;
+    --muted:#6B7B7A;
+    --border:#E3ECEA;
+    --pago:#1E9C55;
+    --pago-bg:#E6F6EC;
+    --parcial:#C7860A;
+    --parcial-bg:#FBF0DA;
+    --pendente:#D93B41;
+    --pendente-bg:#FBE7E8;
+    --radius:16px;
+    --shadow: 0 2px 10px rgba(20,108,107,0.06), 0 1px 2px rgba(20,108,107,0.08);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,.font-display{
+    font-family:'Poppins',system-ui,sans-serif;
+  }
+  a{color:var(--primary);}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+    color:#fff;
+    border-radius:0 0 28px 28px;
+    padding:2.25rem 1rem 2.75rem;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(circle at 85% 15%, rgba(255,255,255,0.12) 0, transparent 45%),
+                      radial-gradient(circle at 10% 90%, rgba(255,255,255,0.10) 0, transparent 40%);
+    pointer-events:none;
+  }
+  .hero .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.72rem;
+    font-weight:600;
+    color:rgba(255,255,255,0.85);
+  }
+  .hero h1{
+    font-weight:700;
+    font-size:1.65rem;
+    margin:.25rem 0 .1rem;
+  }
+  .hero .subtitle{
+    color:rgba(255,255,255,0.85);
+    font-size:.92rem;
+  }
+  .update-pill{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.25);
+    padding:.35rem .8rem;
+    border-radius:999px;
+    font-size:.78rem;
+    margin-top:.75rem;
+  }
+
+  .btn-gear{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.3);
+    color:#fff;
+    border-radius:999px;
+    width:42px;height:42px;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  .btn-gear:hover{background:rgba(255,255,255,0.25);color:#fff;}
+
+  /* ---------- Route progress (signature element) ---------- */
+  .route-wrap{
+    margin-top:1.5rem;
+    background:rgba(255,255,255,0.10);
+    border:1px solid rgba(255,255,255,0.22);
+    border-radius:var(--radius);
+    padding:1.1rem 1.1rem .9rem;
+  }
+  .route-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:.6rem;
+  }
+  .route-pct{
+    font-family:'Poppins';
+    font-weight:800;
+    font-size:2rem;
+    line-height:1;
+  }
+  .route-track{
+    position:relative;
+    height:10px;
+    background:rgba(255,255,255,0.22);
+    border-radius:999px;
+    margin:1.35rem 0 .35rem;
+  }
+  .route-fill{
+    position:absolute;
+    left:0;top:0;bottom:0;
+    background:linear-gradient(90deg, var(--accent), #FFD08A);
+    border-radius:999px;
+    transition:width .8s ease;
+  }
+  .route-fill::after{
+    content:"";
+    position:absolute;
+    right:0;top:50%;
+    width:8px;height:8px;
+    background:#fff;
+    border-radius:50%;
+    transform:translate(50%,-50%);
+    box-shadow:0 0 0 3px rgba(255,255,255,0.35);
+  }
+  .route-marker{
+    position:absolute;
+    top:50%;
+    transform:translate(-50%,-50%);
+    font-size:1.15rem;
+    transition:left .8s ease;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+  }
+  .route-flag{
+    position:absolute;
+    right:-2px; top:50%;
+    transform:translate(50%,-50%);
+    font-size:1rem;
+    opacity:.85;
+  }
+  .route-labels{
+    display:flex;
+    justify-content:space-between;
+    font-size:.75rem;
+    color:rgba(255,255,255,0.75);
+  }
+
+  /* ---------- Stat cards ---------- */
+  .stats-row{margin-top:-1.75rem;}
+  .stat-card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:1.1rem 1.2rem;
+    height:100%;
+    border:1px solid var(--border);
+  }
+  .stat-label{
+    font-size:.74rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-weight:600;
+  }
+  .stat-value{
+    font-family:'Poppins';
+    font-weight:700;
+    font-size:1.4rem;
+    margin-top:.15rem;
+  }
+  .stat-icon{
+    width:38px;height:38px;
+    border-radius:10px;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:1.05rem;
+    margin-bottom:.5rem;
+  }
+
+  .chip{
+    display:inline-flex;align-items:center;gap:.4rem;
+    padding:.3rem .65rem;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:600;
+  }
+  .chip-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .chip-pago{background:var(--pago-bg);color:var(--pago);}
+  .chip-parcial{background:var(--parcial-bg);color:var(--parcial);}
+  .chip-pendente{background:var(--pendente-bg);color:var(--pendente);}
+
+  /* ---------- Table card ---------- */
+  .table-card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+    padding:1.25rem;
+  }
+  .table-card h2{font-size:1.1rem;font-weight:700;}
+  .table thead th{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--muted);
+    border-bottom:2px solid var(--border);
+    font-weight:700;
+    white-space:nowrap;
+    cursor:pointer;
+    user-select:none;
+  }
+  .table thead th:hover{color:var(--primary);}
+  .table thead th .bi{font-size:.7rem;opacity:.55;}
+  .table td{vertical-align:middle;font-size:.9rem;}
+  .table tbody tr:hover{background:#F5FAF9;}
+
+  .status-badge{
+    display:inline-flex;align-items:center;gap:.35rem;
+    padding:.3rem .6rem;
+    border-radius:8px;
+    font-size:.78rem;
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  #searchInput{max-width:260px;}
+
+  footer{
+    color:var(--muted);
+    font-size:.82rem;
+    text-align:center;
+    padding:2rem 1rem 2.5rem;
+  }
+
+  /* ---------- Login / painel ---------- */
+  .panel-card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+    padding:1.25rem;
+  }
+  .panel-badge{
+    background:var(--primary-dark);
+    color:#fff;
+    font-size:.7rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    padding:.25rem .6rem;
+    border-radius:6px;
+  }
+  .row-edit input, .row-edit textarea{font-size:.85rem;}
+  .btn-primary{background:var(--primary);border-color:var(--primary);}
+  .btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark);}
+  .btn-outline-primary{color:var(--primary);border-color:var(--primary);}
+  .btn-outline-primary:hover{background:var(--primary);border-color:var(--primary);}
+  .link-quiet{color:var(--muted);font-size:.82rem;text-decoration:none;}
+  .link-quiet:hover{color:var(--primary);}
+
+  .skeleton{
+    background:linear-gradient(90deg,#EEF3F2 25%,#F7FAF9 37%,#EEF3F2 63%);
+    background-size:400% 100%;
+    animation:shimmer 1.4s ease infinite;
+    border-radius:6px;
+  }
+  @keyframes shimmer{0%{background-position:100% 0;}100%{background-position:0 0;}}
+
+  @media (prefers-reduced-motion: reduce){
+    .route-fill,.route-marker{transition:none;}
+    .skeleton{animation:none;}
+  }
+
+  @media print{
+    .no-print{display:none !important;}
+    body{background:#fff;}
+    .hero{border-radius:0;color:#000;background:#fff !important;}
+    .hero::after{display:none;}
+    .hero .eyebrow, .hero .subtitle, .update-pill{color:#333 !important;}
+    .route-wrap{background:#fff;border:1px solid #ccc;}
+    .route-track{background:#eee;}
+    .stat-card,.table-card{box-shadow:none;border:1px solid #ccc;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== HERO / PUBLIC HEADER ===================== -->
+<header class="hero">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <div class="eyebrow" id="schoolName">Externato Luz do Dia</div>
+        <h1 id="className">Contribuições — Passeio Escolar · 8ª Classe B</h1>
+        <div class="subtitle">Acompanhamento em tempo real para encarregados de educação</div>
+        <div class="update-pill"><i class="bi bi-arrow-repeat"></i> <span id="lastUpdate">a carregar…</span></div>
+      </div>
+      <div class="no-print d-flex gap-2">
+        <button class="btn-gear" id="btnRefresh" title="Atualizar"><i class="bi bi-arrow-clockwise"></i></button>
+        <button class="btn-gear" id="btnGear" title="Área do professor"><i class="bi bi-gear-fill"></i></button>
+      </div>
+    </div>
+
+    <!-- Route progress -->
+    <div class="route-wrap">
+      <div class="route-top">
+        <div>
+          <div class="route-pct"><span id="pctValue">0</span>%</div>
+          <div class="subtitle" style="font-size:.8rem;">da meta arrecadada</div>
+        </div>
+        <div class="text-end">
+          <div style="font-size:1.05rem;font-weight:700;"><span id="totalArrecadado">0,00</span> MT</div>
+          <div class="subtitle" style="font-size:.8rem;">de <span id="totalEsperado">0,00</span> MT</div>
+        </div>
+      </div>
+      <div class="route-track">
+        <div class="route-fill" id="routeFill" style="width:0%">
+          <span class="route-marker" id="routeMarker" style="left:100%;">🚌</span>
+        </div>
+        <span class="route-flag">🏁</span>
+      </div>
+      <div class="route-labels">
+        <span>Partida</span>
+        <span>Falta: <strong id="totalFalta">0,00</strong> MT</span>
+        <span>Meta</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== STAT CARDS ===================== -->
+<div class="container stats-row">
+  <div class="row g-3">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--pago-bg);color:var(--pago);"><i class="bi bi-check-circle-fill"></i></div>
+        <div class="stat-label">Pagos</div>
+        <div class="stat-value" id="countPago">0</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--parcial-bg);color:var(--parcial);"><i class="bi bi-hourglass-split"></i></div>
+        <div class="stat-label">Parciais</div>
+        <div class="stat-value" id="countParcial">0</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--pendente-bg);color:var(--pendente);"><i class="bi bi-exclamation-circle-fill"></i></div>
+        <div class="stat-label">Pendentes</div>
+        <div class="stat-value" id="countPendente">0</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#EAF1FB;color:#2C5CC5;"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-label">Total de alunos</div>
+        <div class="stat-value" id="countTotal">0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PUBLIC TABLE ===================== -->
+<div class="container my-4">
+  <div class="table-card">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+      <h2 class="mb-0">Estado das contribuições</h2>
+      <div class="d-flex gap-2 no-print">
+        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Pesquisar aluno…">
+        <button class="btn btn-outline-primary btn-sm" id="btnPrint"><i class="bi bi-printer"></i> Imprimir / PDF</button>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width:44px;">Nº</th>
+            <th data-sort="nome">Nome do aluno <i class="bi bi-arrow-down-up"></i></th>
+            <th data-sort="valorPagar" class="text-end">Valor a pagar</th>
+            <th data-sort="valorPago" class="text-end">Valor pago</th>
+            <th class="text-end">Saldo</th>
+            <th data-sort="estado">Estado <i class="bi bi-arrow-down-up"></i></th>
+            <th>Últ. pagamento</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPublic">
+          <tr><td colspan="7"><div class="skeleton" style="height:20px;"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="emptyState" class="text-center text-muted py-4 d-none">
+      <i class="bi bi-inbox fs-3"></i>
+      <div>Nenhum aluno encontrado.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Externato Luz do Dia — Turma 8B
+</footer>
+
+<!-- ===================== LOGIN MODAL ===================== -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px;border:none;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title"><i class="bi bi-shield-lock-fill me-2" style="color:var(--primary);"></i>Área do professor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small">Introduza a palavra-passe para gerir alunos e pagamentos.</p>
+        <input type="password" id="loginPassword" class="form-control" placeholder="Palavra-passe">
+        <div class="text-danger small mt-2 d-none" id="loginError">Palavra-passe incorreta.</div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-primary w-100" id="btnLogin"><i class="bi bi-box-arrow-in-right"></i> Entrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PROFESSOR PANEL ===================== -->
+<div class="container my-4 d-none" id="panelSection">
+  <div class="panel-card">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="panel-badge">Painel do professor</span>
+        <span class="text-muted small" id="panelStatus"></span>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" id="btnAddAluno"><i class="bi bi-person-plus"></i> Novo aluno</button>
+        <button class="btn btn-sm btn-outline-secondary" id="btnLogout"><i class="bi bi-box-arrow-right"></i> Sair</button>
+      </div>
+    </div>
+
+    <!-- Add student form -->
+    <div class="border rounded-3 p-3 mb-3 d-none" id="addAlunoForm" style="background:#F5FAF9;">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label small text-muted mb-1">Nome do aluno</label>
+          <input type="text" class="form-control form-control-sm" id="newNome" placeholder="Nome completo">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted mb-1">Valor a pagar (MT)</label>
+          <input type="number" class="form-control form-control-sm" id="newValorPagar" placeholder="0.00">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted mb-1">Observações</label>
+          <input type="text" class="form-control form-control-sm" id="newObs" placeholder="Opcional">
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+          <button class="btn btn-primary btn-sm w-100" id="btnSaveNew"><i class="bi bi-check-lg"></i> Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table row-edit align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width:40px;">Nº</th>
+            <th style="min-width:160px;">Nome</th>
+            <th style="width:110px;">A pagar</th>
+            <th style="width:110px;">Pago</th>
+            <th style="width:150px;">Últ. pagamento</th>
+            <th style="min-width:150px;">Observações</th>
+            <th style="width:110px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPanel"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="mainToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody">Guardado.</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* =========================================================================
+   CONFIGURAÇÃO
+   Cole aqui o URL do Web App do Google Apps Script (ver GUIA_INSTALACAO.md)
+   ========================================================================= */
+const CONFIG = {
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwQej1ch1Az-C-u-XxXfQoA9DHIUULncG1OJ8wP-Bj22xieY2chLnLXHwtmEStykz9Zrw/exec",
+  REFRESH_INTERVAL_MS: 30000,
+  ESCOLA: "Externato Luz do Dia",
+  TURMA: "8ª Classe B (8B)"
+};
+
+document.getElementById('schoolName').textContent = CONFIG.ESCOLA;
+document.getElementById('className').textContent = `Contribuições — Passeio Escolar · ${CONFIG.TURMA}`;
+
+let ALUNOS = [];
+let sortKey = 'nome';
+let sortDir = 1;
+let senhaSessao = sessionStorage.getItem('senhaProfessor') || null;
+
+const fmt = (n) => (Number(n) || 0).toLocaleString('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+function estadoDe(aluno){
+  const pago = Number(aluno.valorPago)||0, pagar = Number(aluno.valorPagar)||0;
+  if(pagar > 0 && pago >= pagar) return 'Pago';
+  if(pago > 0) return 'Parcial';
+  return 'Pendente';
+}
+function estadoInfo(estado){
+  if(estado==='Pago') return {cls:'chip-pago', color:'var(--pago)', bg:'var(--pago-bg)', icon:'bi-check-circle-fill', dot:'🟢'};
+  if(estado==='Parcial') return {cls:'chip-parcial', color:'var(--parcial)', bg:'var(--parcial-bg)', icon:'bi-hourglass-split', dot:'🟡'};
+  return {cls:'chip-pendente', color:'var(--pendente)', bg:'var(--pendente-bg)', icon:'bi-exclamation-circle-fill', dot:'🔴'};
+}
+
+/* ---------------- FETCH DATA ---------------- */
+async function carregarDados(){
+  try{
+    if(CONFIG.APPS_SCRIPT_URL.includes('COLE_AQUI')){
+      // Modo de demonstração (sem backend ligado ainda)
+      ALUNOS = ALUNOS.length ? ALUNOS : gerarDadosDemo();
+      renderTudo(new Date());
+      return;
+    }
+    const res = await fetch(CONFIG.APPS_SCRIPT_URL);
+    const json = await res.json();
+    ALUNOS = json.alunos || [];
+    renderTudo(json.ultimaAtualizacao ? new Date(json.ultimaAtualizacao) : new Date());
+  }catch(err){
+    console.error(err);
+    mostrarToast('Não foi possível atualizar os dados. Tente novamente.');
+  }
+}
+
+function gerarDadosDemo(){
+  const nomes = ["Ana Cossa","Bruno Macuácua","Carla Nhantumbo","Dário Chissano","Elsa Muianga",
+    "Fábio Zunguze","Graça Sitoe","Hélio Matsinhe","Inês Bila","João Tembe",
+    "Karina Massinga","Lúcio Nhampossa","Marta Uamusse","Nelson Guambe","Osvalda Chirindza","Paulo Machava"];
+  return nomes.map((nome,i)=>{
+    const valorPagar = 1500;
+    const r = Math.random();
+    const valorPago = r<0.4 ? valorPagar : r<0.75 ? Math.round(valorPagar*Math.random()*0.8) : 0;
+    return {id:i+1, nome, valorPagar, valorPago, dataUltimoPagamento: valorPago>0 ? '2026-07-15' : '', observacoes:''};
+  });
+}
+
+/* ---------------- RENDER ---------------- */
+function renderTudo(dataAtualizacao){
+  const totalEsperado = ALUNOS.reduce((s,a)=>s+(Number(a.valorPagar)||0),0);
+  const totalArrecadado = ALUNOS.reduce((s,a)=>s+(Number(a.valorPago)||0),0);
+  const totalFalta = Math.max(totalEsperado-totalArrecadado,0);
+  const pct = totalEsperado>0 ? Math.min(100, Math.round((totalArrecadado/totalEsperado)*100)) : 0;
+
+  document.getElementById('pctValue').textContent = pct;
+  document.getElementById('totalArrecadado').textContent = fmt(totalArrecadado);
+  document.getElementById('totalEsperado').textContent = fmt(totalEsperado);
+  document.getElementById('totalFalta').textContent = fmt(totalFalta);
+  document.getElementById('routeFill').style.width = pct+'%';
+  document.getElementById('routeMarker').style.left = '100%';
+
+  const estados = ALUNOS.map(a=>estadoDe(a));
+  document.getElementById('countPago').textContent = estados.filter(e=>e==='Pago').length;
+  document.getElementById('countParcial').textContent = estados.filter(e=>e==='Parcial').length;
+  document.getElementById('countPendente').textContent = estados.filter(e=>e==='Pendente').length;
+  document.getElementById('countTotal').textContent = ALUNOS.length;
+
+  document.getElementById('lastUpdate').textContent =
+    'Última atualização: ' + dataAtualizacao.toLocaleString('pt-PT', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  renderTabelaPublica();
+  if(senhaSessao) renderPainel();
+}
+
+function listaOrdenadaFiltrada(){
+  const termo = (document.getElementById('searchInput').value||'').toLowerCase();
+  let lista = ALUNOS.filter(a=>a.nome.toLowerCase().includes(termo));
+  lista.sort((a,b)=>{
+    let va, vb;
+    if(sortKey==='estado'){ va=estadoDe(a); vb=estadoDe(b); }
+    else { va=a[sortKey]; vb=b[sortKey]; }
+    if(typeof va === 'string') return va.localeCompare(vb)*sortDir;
+    return ((va||0)-(vb||0))*sortDir;
+  });
+  return lista;
+}
+
+function renderTabelaPublica(){
+  const lista = listaOrdenadaFiltrada();
+  const tbody = document.getElementById('tbodyPublic');
+  const empty = document.getElementById('emptyState');
+  tbody.innerHTML = '';
+  empty.classList.toggle('d-none', lista.length>0);
+
+  lista.forEach((a, idx)=>{
+    const estado = estadoDe(a);
+    const info = estadoInfo(estado);
+    const saldo = Math.max((Number(a.valorPagar)||0)-(Number(a.valorPago)||0),0);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="text-muted">${idx+1}</td>
+      <td class="fw-semibold">${escapeHtml(a.nome)}</td>
+      <td class="text-end">${fmt(a.valorPagar)} MT</td>
+      <td class="text-end">${fmt(a.valorPago)} MT</td>
+      <td class="text-end">${fmt(saldo)} MT</td>
+      <td><span class="status-badge" style="background:${info.bg};color:${info.color};">${info.dot} ${estado}</span></td>
+      <td class="text-muted">${a.dataUltimoPagamento ? formatarData(a.dataUltimoPagamento) : '—'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function formatarData(iso){
+  const d = new Date(iso);
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------------- SORTING / SEARCH ---------------- */
+document.querySelectorAll('th[data-sort]').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.getAttribute('data-sort');
+    if(sortKey===key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+    renderTabelaPublica();
+  });
+});
+document.getElementById('searchInput').addEventListener('input', renderTabelaPublica);
+
+/* ---------------- REFRESH / PRINT ---------------- */
+document.getElementById('btnRefresh').addEventListener('click', carregarDados);
+document.getElementById('btnPrint').addEventListener('click', ()=>window.print());
+
+/* ---------------- LOGIN ---------------- */
+const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+document.getElementById('btnGear').addEventListener('click', ()=>{
+  if(senhaSessao){
+    document.getElementById('panelSection').classList.remove('d-none');
+    document.getElementById('panelSection').scrollIntoView({behavior:'smooth'});
+  } else {
+    loginModal.show();
+  }
+});
+document.getElementById('btnLogin').addEventListener('click', tentarLogin);
+document.getElementById('loginPassword').addEventListener('keydown', e=>{ if(e.key==='Enter') tentarLogin(); });
+
+async function tentarLogin(){
+  const senha = document.getElementById('loginPassword').value;
+  if(!senha) return;
+  try{
+    let ok = false;
+    if(CONFIG.APPS_SCRIPT_URL.includes('COLE_AQUI')){
+      ok = (senha === 'demo123'); // apenas para o modo de demonstração
+    } else {
+      const resp = await chamarAPI('login', {}, senha);
+      ok = resp && resp.ok;
+    }
+    if(ok){
+      senhaSessao = senha;
+      sessionStorage.setItem('senhaProfessor', senha);
+      loginModal.hide();
+      document.getElementById('loginError').classList.add('d-none');
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('panelSection').classList.remove('d-none');
+      renderPainel();
+      document.getElementById('panelSection').scrollIntoView({behavior:'smooth'});
+    } else {
+      document.getElementById('loginError').classList.remove('d-none');
+    }
+  }catch(err){
+    console.error(err);
+    document.getElementById('loginError').textContent = 'Erro de ligação. Tente novamente.';
+    document.getElementById('loginError').classList.remove('d-none');
+  }
+}
+document.getElementById('btnLogout').addEventListener('click', ()=>{
+  senhaSessao = null;
+  sessionStorage.removeItem('senhaProfessor');
+  document.getElementById('panelSection').classList.add('d-none');
+});
+
+/* ---------------- API HELPER ----------------
+   Envia como text/plain para evitar preflight CORS no Apps Script. */
+async function chamarAPI(action, data, senhaOverride){
+  const payload = { action, senha: senhaOverride || senhaSessao, data };
+  const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  });
+  return res.json();
+}
+
+/* ---------------- PAINEL DO PROFESSOR ---------------- */
+document.getElementById('btnAddAluno').addEventListener('click', ()=>{
+  document.getElementById('addAlunoForm').classList.toggle('d-none');
+});
+
+document.getElementById('btnSaveNew').addEventListener('click', async ()=>{
+  const nome = document.getElementById('newNome').value.trim();
+  const valorPagar = parseFloat(document.getElementById('newValorPagar').value)||0;
+  const observacoes = document.getElementById('newObs').value.trim();
+  if(!nome){ mostrarToast('Indique o nome do aluno.'); return; }
+
+  if(CONFIG.APPS_SCRIPT_URL.includes('COLE_AQUI')){
+    const novoId = Math.max(0,...ALUNOS.map(a=>a.id))+1;
+    ALUNOS.push({id:novoId, nome, valorPagar, valorPago:0, dataUltimoPagamento:'', observacoes});
+    document.getElementById('newNome').value=''; document.getElementById('newValorPagar').value=''; document.getElementById('newObs').value='';
+    document.getElementById('addAlunoForm').classList.add('d-none');
+    renderTudo(new Date());
+    mostrarToast('Aluno adicionado (modo demonstração).');
+    return;
+  }
+  try{
+    await chamarAPI('addAluno', {nome, valorPagar, observacoes});
+    document.getElementById('newNome').value=''; document.getElementById('newValorPagar').value=''; document.getElementById('newObs').value='';
+    document.getElementById('addAlunoForm').classList.add('d-none');
+    mostrarToast('Aluno adicionado.');
+    await carregarDados();
+  }catch(err){ mostrarToast('Erro ao adicionar aluno.'); }
+});
+
+function renderPainel(){
+  document.getElementById('panelStatus').textContent = `${ALUNOS.length} aluno(s) · sessão ativa`;
+  const tbody = document.getElementById('tbodyPanel');
+  tbody.innerHTML = '';
+  ALUNOS.forEach((a, idx)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="text-muted">${idx+1}</td>
+      <td><input type="text" class="form-control form-control-sm" value="${escapeAttr(a.nome)}" data-field="nome" data-id="${a.id}"></td>
+      <td><input type="number" class="form-control form-control-sm" value="${a.valorPagar||0}" data-field="valorPagar" data-id="${a.id}"></td>
+      <td><input type="number" class="form-control form-control-sm" value="${a.valorPago||0}" data-field="valorPago" data-id="${a.id}"></td>
+      <td><input type="date" class="form-control form-control-sm" value="${a.dataUltimoPagamento||''}" data-field="dataUltimoPagamento" data-id="${a.id}"></td>
+      <td><input type="text" class="form-control form-control-sm" value="${escapeAttr(a.observacoes||'')}" data-field="observacoes" data-id="${a.id}"></td>
+      <td class="d-flex gap-1">
+        <button class="btn btn-sm btn-outline-primary btn-save" data-id="${a.id}" title="Guardar"><i class="bi bi-check-lg"></i></button>
+        <button class="btn btn-sm btn-outline-danger btn-del" data-id="${a.id}" title="Eliminar"><i class="bi bi-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('.btn-save').forEach(btn=>{
+    btn.addEventListener('click', ()=>guardarLinha(btn.dataset.id));
+  });
+  tbody.querySelectorAll('.btn-del').forEach(btn=>{
+    btn.addEventListener('click', ()=>eliminarAluno(btn.dataset.id));
+  });
+}
+function escapeAttr(s){ return String(s).replace(/"/g,'&quot;'); }
+
+async function guardarLinha(id){
+  const linha = document.querySelector(`.btn-save[data-id="${id}"]`).closest('tr');
+  const dados = {};
+  linha.querySelectorAll('[data-field]').forEach(inp=>{ dados[inp.dataset.field] = inp.value; });
+  dados.valorPagar = parseFloat(dados.valorPagar)||0;
+  dados.valorPago = parseFloat(dados.valorPago)||0;
+
+  if(CONFIG.APPS_SCRIPT_URL.includes('COLE_AQUI')){
+    const aluno = ALUNOS.find(a=>String(a.id)===String(id));
+    Object.assign(aluno, dados);
+    renderTudo(new Date());
+    mostrarToast('Alterações guardadas (modo demonstração).');
+    return;
+  }
+  try{
+    await chamarAPI('editarAluno', {id, ...dados});
+    mostrarToast('Alterações guardadas.');
+    await carregarDados();
+  }catch(err){ mostrarToast('Erro ao guardar.'); }
+}
+
+async function eliminarAluno(id){
+  if(!confirm('Eliminar este aluno e o respetivo registo de pagamento?')) return;
+  if(CONFIG.APPS_SCRIPT_URL.includes('COLE_AQUI')){
+    ALUNOS = ALUNOS.filter(a=>String(a.id)!==String(id));
+    renderTudo(new Date());
+    mostrarToast('Aluno eliminado (modo demonstração).');
+    return;
+  }
+  try{
+    await chamarAPI('eliminarAluno', {id});
+    mostrarToast('Aluno eliminado.');
+    await carregarDados();
+  }catch(err){ mostrarToast('Erro ao eliminar.'); }
+}
+
+/* ---------------- TOAST ---------------- */
+function mostrarToast(msg){
+  document.getElementById('toastBody').textContent = msg;
+  const toastEl = document.getElementById('mainToast');
+  toastEl.style.background = 'var(--primary)';
+  toastEl.style.color = '#fff';
+  new bootstrap.Toast(toastEl, {delay:3000}).show();
+}
+
+/* ---------------- INIT ---------------- */
+carregarDados();
+setInterval(carregarDados, CONFIG.REFRESH_INTERVAL_MS);
+</script>
+</body>
+</html>
