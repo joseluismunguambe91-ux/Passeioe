@@ -511,6 +511,7 @@
    ========================================================================= */
 const CONFIG = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwQej1ch1Az-C-u-XxXfQoA9DHIUULncG1OJ8wP-Bj22xieY2chLnLXHwtmEStykz9Zrw/exec",
+  CSV_URL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRZikjNaqa4g-fb4WHN-RMKMAgekUMbJhovYfyfkU8xtR5KAT0fXfb4OfOWKI5F40_hYgnJ3vJD9Evh/pub?gid=1051585906&single=true&output=csv",
   REFRESH_INTERVAL_MS: 30000,
   ESCOLA: "Externato Luz do Dia",
   TURMA: "8ª Classe B (8B)"
@@ -538,23 +539,69 @@ function estadoInfo(estado){
   return {cls:'chip-pendente', color:'var(--pendente)', bg:'var(--pendente-bg)', icon:'bi-exclamation-circle-fill', dot:'🔴'};
 }
 
-/* ---------------- FETCH DATA ---------------- */
+/* ---------------- FETCH DATA (via CSV publicado da Sheet) ---------------- */
 async function carregarDados(){
   try{
-    if(CONFIG.APPS_SCRIPT_URL.includes('COLE_AQUI')){
+    if(!CONFIG.CSV_URL || CONFIG.CSV_URL.includes('COLE_AQUI')){
       // Modo de demonstração (sem backend ligado ainda)
       ALUNOS = ALUNOS.length ? ALUNOS : gerarDadosDemo();
       renderTudo(new Date());
       return;
     }
-    const res = await fetch(CONFIG.APPS_SCRIPT_URL);
-    const json = await res.json();
-    ALUNOS = json.alunos || [];
-    renderTudo(json.ultimaAtualizacao ? new Date(json.ultimaAtualizacao) : new Date());
+    // Adiciona um parâmetro aleatório para evitar cache antiga do navegador/Google
+    const url = CONFIG.CSV_URL + '&cachebust=' + Date.now();
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const texto = await res.text();
+    ALUNOS = parseCSVAlunos(texto);
+    renderTudo(new Date());
   }catch(err){
     console.error(err);
     mostrarToast('Não foi possível atualizar os dados. Tente novamente.');
   }
+}
+
+/* Parser simples de CSV (trata campos entre aspas com vírgulas dentro) */
+function parseCSVLinhas(texto){
+  const linhas = [];
+  let campo = '', linha = [], dentroAspas = false;
+  for(let i=0; i<texto.length; i++){
+    const c = texto[i];
+    if(dentroAspas){
+      if(c === '"'){
+        if(texto[i+1] === '"'){ campo += '"'; i++; }
+        else dentroAspas = false;
+      } else campo += c;
+    } else {
+      if(c === '"') dentroAspas = true;
+      else if(c === ','){ linha.push(campo); campo=''; }
+      else if(c === '\r'){ /* ignora */ }
+      else if(c === '\n'){ linha.push(campo); linhas.push(linha); linha=[]; campo=''; }
+      else campo += c;
+    }
+  }
+  if(campo.length || linha.length){ linha.push(campo); linhas.push(linha); }
+  return linhas.filter(l => l.length>1 || (l[0] && l[0].trim()!==''));
+}
+
+/* Espera colunas: ID, Nome, ValorPagar, ValorPago, DataUltimoPagamento, Observacoes */
+function parseCSVAlunos(texto){
+  const linhas = parseCSVLinhas(texto);
+  if(linhas.length<2) return [];
+  const alunos = [];
+  for(let i=1; i<linhas.length; i++){
+    const l = linhas[i];
+    if(!l[0] || String(l[0]).trim()==='') continue;
+    alunos.push({
+      id: l[0],
+      nome: l[1] || '',
+      valorPagar: parseFloat((l[2]||'0').replace(',','.')) || 0,
+      valorPago: parseFloat((l[3]||'0').replace(',','.')) || 0,
+      dataUltimoPagamento: l[4] || '',
+      observacoes: l[5] || ''
+    });
+  }
+  return alunos;
 }
 
 function gerarDadosDemo(){
